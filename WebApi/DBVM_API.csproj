@@ -24,7 +24,7 @@
     <PackageReference Include="MySql.Data" Version="8.0.29" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NPOI" Version="2.4.1" />
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.26.0" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="23.26.200" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.2" />
     <PackageReference Include="System.Data.Odbc" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.11" />
