@@ -43,6 +43,9 @@
     <Reference Include="MyOffice">
       <HintPath>..\0.DLL\MyOffice.dll</HintPath>
     </Reference>
+    <Reference Include="Oracle_Lib">
+      <HintPath>..\0.DLL\Oracle_Lib.dll</HintPath>
+    </Reference>
     <Reference Include="SQLUI">
       <HintPath>..\0.DLL\SQLUI.dll</HintPath>
     </Reference>

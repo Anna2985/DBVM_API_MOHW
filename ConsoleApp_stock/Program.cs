@@ -2,12 +2,13 @@
 using H_Pannel_lib;
 using HIS_DB_Lib;
 using Microsoft.VisualBasic;
+using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using Oracle.ManagedDataAccess.Client;
+using System.Threading;
 
 
 namespace ConsoleApp_stock
@@ -32,9 +33,14 @@ namespace ConsoleApp_stock
                 return "";
             }
         }
+        private static System.Threading.Mutex mutex;
 
         static void Main(string[] args)
         {
+            Console.Title = "ConsoleApp_AddDrugStotreDistribution";
+
+            mutex = new System.Threading.Mutex(true, Console.Title);
+            if (mutex.WaitOne(0, false) == false) return;
             List<stockClass> stockClasses = new List<stockClass>();
             
             using (var conn_oracle = new OracleConnection(conn_str))
