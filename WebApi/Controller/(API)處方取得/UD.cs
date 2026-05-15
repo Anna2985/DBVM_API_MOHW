@@ -174,13 +174,14 @@ namespace DBVM_API.Controller._API_處方取得
                                         $"{時間[8..10]}:{時間[10..12]}:{時間[12..14]}";
                                 }
 
+
                                 //====== 交易量（負值） ======
                                 double sumQTY = SafeDouble(reader, "PAC_SUMQTY");
                                 orderClass.交易量 = (-sumQTY).ToString();
 
                                 //====== PRI_KEY ======
                                 string key = $"{orderClass.頻次}{orderClass.天數}{orderClass.單次劑量}{orderClass.劑量單位}";
-                                orderClass.PRI_KEY = $"{時間}-{orderClass.病歷號}-{orderClass.藥品碼}{orderClass.交易量}-{key}";
+                                orderClass.PRI_KEY = $"{時間[..8]}-{orderClass.病歷號}-{orderClass.藥品碼}{orderClass.交易量}-{key}";
                                 if (orderClass.藥品碼.StartsWith("XXFD") == false && 大瓶藥排除.Contains(orderClass.藥品碼) == false && (orderClass.藥品碼.StartsWith("I") || orderClass.藥品碼.StartsWith("O") || orderClass.藥品碼.StartsWith("E")))
                                     orderClasses.Add(orderClass);
                             }
@@ -213,9 +214,11 @@ namespace DBVM_API.Controller._API_處方取得
                     .GroupBy(x => x.病歷號)
                     .Select(g => g.ToList())
                     .ToList();
+                   
                     List<OrderClass> add = new List<OrderClass>();
                     foreach(var item in orders)
                     {
+                        
                         List<OrderClass> classes = item
                          .Where(x => x.藥品碼.StringIsEmpty() == false)
                          .GroupBy(x => new { x.藥品碼, x.頻次, x.途徑 })

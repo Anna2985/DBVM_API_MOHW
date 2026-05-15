@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DBVM_API.Controller._API_驗收
 {
-    [Route("api/[controller]")]
+    [Route("dbvm/[controller]")]
     [ApiController]
     public class inspection : ControllerBase
     {
@@ -174,7 +174,7 @@ namespace DBVM_API.Controller._API_驗收
                         NO_ACPT = content.驗收單號,
                         //VNDR_NAME = content.供應商,
                         ACPT_DATE = sub.操作時間,
-                        INT_IN_TIME = sub.操作時間,
+                        INT_IN_TIME = DateTime.Now.ToDateTimeString(),
 
                         // 明細
                         NO_REQ = 請購單號,
@@ -182,9 +182,9 @@ namespace DBVM_API.Controller._API_驗收
                         GOOD_CODE = sub.料號,
                         AMT_ACPT = sub.實收數量,
                         BATCH = sub.批號,
-                        DATE_V = sub.效期,
+                        DATE_V = sub.效期.StringToDateTime().ToString("yyyyMMdd"),
                         HS_KEY = sub.GUID,
-                        MIS_ACPT_TIME = DateTime.Now
+                        //MIS_ACPT_TIME = DateTime.Now
                     };
 
                     // 已回寫過 -> 更新
@@ -219,15 +219,15 @@ namespace DBVM_API.Controller._API_驗收
                 // =========================
                 if (addItems.Count > 0)
                 {
-                    bool addMaster = BatchAddHS_PUR_ACPT(
-                        oRCControl.conn_str,
-                        addMasterItems
-                    );
+                    //bool addMaster = BatchAddHS_PUR_ACPT(
+                    //    oRCControl.conn_str,
+                    //    addMasterItems
+                    //);
 
-                    if (!addMaster)
-                    {
-                        throw new Exception("HS_PUR_ACPT 主檔新增失敗");
-                    }
+                    //if (!addMaster)
+                    //{
+                    //    throw new Exception("HS_PUR_ACPT 主檔新增失敗");
+                    //}
 
                     bool addDetail = BatchAddHS_PUR_ACPT_ITM(
                         oRCControl.conn_str,
@@ -328,7 +328,6 @@ namespace DBVM_API.Controller._API_驗收
             public string BATCH { get; set; }        // 批號
             public string DATE_V { get; set; }       // 效期 yyyyMMdd
             public string HS_KEY { get; set; }       // 鴻森系統KEY值
-            public DateTime? MIS_ACPT_TIME { get; set; } // 杏翔MIS系統.轉驗收時間
         }
 
         public static bool BatchAddHS_PUR_ACPT(string conn_str, List<UpdateItem_acpt> updateItems)
@@ -378,9 +377,8 @@ namespace DBVM_API.Controller._API_驗收
                             foreach (var item in updateItems)
                             {
                                 cmd.Parameters["NO_ACPT"].Value = item.NO_ACPT;
-                                cmd.Parameters["VNDR_NAME"].Value = item.VNDR_NAME;
-                                cmd.Parameters["ACPT_DATE"].Value = item.ACPT_DATE;
-                                cmd.Parameters["INT_IN_TIME"].Value = item.INT_IN_TIME;
+                                cmd.Parameters["ACPT_DATE"].Value = DateTime.Parse(item.ACPT_DATE);
+                                cmd.Parameters["INT_IN_TIME"].Value = DateTime.Parse(item.INT_IN_TIME);
 
                                 totalRows += cmd.ExecuteNonQuery();
                             }
@@ -430,7 +428,7 @@ namespace DBVM_API.Controller._API_驗收
                         {
                             cmd.Transaction = tran;
 
-                            cmd.Parameters.Add("VNDR_NAME", OracleDbType.NVarchar2);
+                            //cmd.Parameters.Add("VNDR_NAME", OracleDbType.NVarchar2);
                             cmd.Parameters.Add("ACPT_DATE", OracleDbType.Date);
                             cmd.Parameters.Add("INT_IN_TIME", OracleDbType.TimeStamp);
                             cmd.Parameters.Add("NO_ACPT", OracleDbType.Varchar2);
@@ -439,7 +437,7 @@ namespace DBVM_API.Controller._API_驗收
 
                             foreach (var item in updateItems)
                             {
-                                cmd.Parameters["VNDR_NAME"].Value = item.VNDR_NAME;
+                                //cmd.Parameters["VNDR_NAME"].Value = item.VNDR_NAME;
                                 cmd.Parameters["ACPT_DATE"].Value = item.ACPT_DATE;
                                 cmd.Parameters["INT_IN_TIME"].Value = item.INT_IN_TIME;
                                 cmd.Parameters["NO_ACPT"].Value = item.NO_ACPT;
@@ -492,8 +490,7 @@ namespace DBVM_API.Controller._API_驗收
                     AMT_ACPT,
                     BATCH,
                     DATE_V,
-                    HS_KEY,
-                    MIS_ACPT_TIME
+                    HS_KEY
                 )
                 VALUES
                 (
@@ -504,8 +501,7 @@ namespace DBVM_API.Controller._API_驗收
                     :AMT_ACPT,
                     :BATCH,
                     :DATE_V,
-                    :HS_KEY,
-                    :MIS_ACPT_TIME
+                    :HS_KEY
                 )";
 
                         using (var cmd = new OracleCommand(commandText, conn_oracle))
@@ -520,7 +516,6 @@ namespace DBVM_API.Controller._API_驗收
                             cmd.Parameters.Add("BATCH", OracleDbType.Varchar2);
                             cmd.Parameters.Add("DATE_V", OracleDbType.Char);
                             cmd.Parameters.Add("HS_KEY", OracleDbType.Varchar2);
-                            cmd.Parameters.Add("MIS_ACPT_TIME", OracleDbType.TimeStamp);
 
                             int totalRows = 0;
 
@@ -534,9 +529,6 @@ namespace DBVM_API.Controller._API_驗收
                                 cmd.Parameters["BATCH"].Value = item.BATCH;
                                 cmd.Parameters["DATE_V"].Value = item.DATE_V;
                                 cmd.Parameters["HS_KEY"].Value = item.HS_KEY;
-                                cmd.Parameters["MIS_ACPT_TIME"].Value =
-                                    item.MIS_ACPT_TIME.HasValue ? item.MIS_ACPT_TIME.Value : DBNull.Value;
-
                                 totalRows += cmd.ExecuteNonQuery();
                             }
 
@@ -580,8 +572,7 @@ namespace DBVM_API.Controller._API_驗收
                     AMT_ACPT = :AMT_ACPT,
                     BATCH = :BATCH,
                     DATE_V = :DATE_V,
-                    HS_KEY = :HS_KEY,
-                    MIS_ACPT_TIME = :MIS_ACPT_TIME
+                    HS_KEY = :HS_KEY
                 WHERE NO_ACPT = :NO_ACPT
                   AND NO_REQ = :NO_REQ
                   AND CREC = :CREC";
@@ -610,9 +601,6 @@ namespace DBVM_API.Controller._API_驗收
                                 cmd.Parameters["BATCH"].Value = item.BATCH;
                                 cmd.Parameters["DATE_V"].Value = item.DATE_V;
                                 cmd.Parameters["HS_KEY"].Value = item.HS_KEY;
-                                cmd.Parameters["MIS_ACPT_TIME"].Value =
-                                    item.MIS_ACPT_TIME.HasValue ? item.MIS_ACPT_TIME.Value : DBNull.Value;
-
                                 cmd.Parameters["NO_ACPT"].Value = item.NO_ACPT;
                                 cmd.Parameters["NO_REQ"].Value = item.NO_REQ;
                                 cmd.Parameters["CREC"].Value = item.CREC;

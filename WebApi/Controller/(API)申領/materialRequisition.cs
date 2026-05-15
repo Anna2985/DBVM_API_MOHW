@@ -71,7 +71,7 @@ namespace DBVM_API.Controller._API_申領
                 int currentSerial = maxSerial;
                 List<materialRequisitionClass> add = new List<materialRequisitionClass>();
                 List<materialRequisitionClass> update = new List<materialRequisitionClass>();
-
+                List<medClass> medClasses = medClass.get_med_cloud(API);
 
                 foreach (var item in input_materialRequisitions)
                 {
@@ -119,6 +119,11 @@ namespace DBVM_API.Controller._API_申領
                     string 備註 = item.備註 ?? "";
                     string 請領單號 = 備註.Length >= 13 ? 備註.Substring(0, 14) : "";
                     string 料號 = item.料號;
+                    if (料號.StringIsEmpty())
+                    {
+                        medClass med = medClasses.FirstOrDefault(x => x.藥品碼 == item.藥碼);
+                        料號 = med != null ? med.料號 : "";
+                    }
                     string 實撥量 = item.實撥量 ?? "0";
                     if (item.狀態 == "等待過帳") 實撥量 = "0";
                     updateItem_Mrs_add.Add(new UpdateItem_mr
@@ -355,7 +360,7 @@ namespace DBVM_API.Controller._API_申領
             }
         }
 
-        public static bool BatchAddHS_STK_APLY_ITM(string conn_str, List<UpdateItem_mr> updateItems)
+        public static bool BatchAddHS_STK_APLY_ITM(string conn_str, List<UpdateItem_mr> updateItems) //add
         {
             using (var conn_oracle = new OracleConnection(conn_str))
             {
@@ -425,7 +430,7 @@ namespace DBVM_API.Controller._API_申領
                     }
                 }
             }
-        }
+        } 
         public static bool BatchUpdateHS_STK_APLY_ITM(string conn_str, List<UpdateItem_mr> updateItems)
         {
             using (var conn_oracle = new OracleConnection(conn_str))
