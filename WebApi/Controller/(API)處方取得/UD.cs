@@ -241,7 +241,7 @@ namespace DBVM_API.Controller._API_處方取得
                     returnData_order.Result += $"，HIS連線時間:{HIS連線時間}，取得HIS資料:{HISData時間}，DB寫入時間:{DB寫入時間}";
 
                     string json = returnData_order.JsonSerializationt(true);
-                    //Logger.Log(json);
+                    Logger.Log(json);
                     conn_oracle.Close();
                     return json;
                 }

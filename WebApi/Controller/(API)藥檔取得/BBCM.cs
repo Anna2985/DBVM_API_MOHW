@@ -75,6 +75,11 @@ namespace DB2VM_API.Controller
                     {
                         medClass.中西藥 = "西藥";
                     }
+                    string 狀態 = reader["DIA_DC"].ToString().Trim();
+                    if (狀態 == "Y")
+                        medClass.開檔狀態 = "關檔中";
+                    else
+                        medClass.開檔狀態 = "開檔中";
 
                     medClasses_his.Add(medClass);
 

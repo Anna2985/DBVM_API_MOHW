@@ -218,6 +218,8 @@ namespace DBVM_API.Controller.住院藥車
                             medCpoeClass.數量 = orders_[j].交易量.Replace("-", "").StringToDouble().ToString();
                             medCpoeClass.劑量 = orders_[j].單次劑量;
                             medCpoeClass.單位 = orders_[j].劑量單位;
+                            medCpoeClass.調劑狀態 = "Y";
+
                             if (medCpoeClass.藥碼.StartsWith("O")) 
                             { 
                                 medCpoeClass.排序 = $"A{medCpoeClass.藥碼}";
